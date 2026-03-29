@@ -2,11 +2,12 @@ import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 const mockGet = jest.fn();
 const mockSetRequestHandler = jest.fn();
+const mockConnect = jest.fn();
 
 jest.unstable_mockModule('@modelcontextprotocol/sdk/server/index.js', () => ({
   Server: jest.fn().mockImplementation(() => ({
     setRequestHandler: mockSetRequestHandler,
-    connect: jest.fn(),
+    connect: mockConnect,
   })),
 }));
 
@@ -30,7 +31,10 @@ describe('Tool Integration Tests', () => {
     new MeteoControlServer();
   });
 
-  const getHandler = () => mockSetRequestHandler.mock.calls.find(c => c[0] === CallToolRequestSchema)![1] as Function;
+  const getHandler = () =>
+    mockSetRequestHandler.mock.calls.find((c) => c[0] === CallToolRequestSchema)![1] as (
+      request: unknown,
+    ) => Promise<unknown>;
 
   it('should successfully handle a get_energy_data tool call', async () => {
     const mockData = { energy: 1234.5 };
