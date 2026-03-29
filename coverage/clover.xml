@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1774803397692" clover="3.2.0">
-  <project timestamp="1774803397692" name="All files">
-    <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1" elements="2" coveredelements="2" complexity="0" loc="1" ncloc="1" packages="1" files="1" classes="1"/>
+<coverage generated="1774804244960" clover="3.2.0">
+  <project timestamp="1774804244960" name="All files">
+    <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6" elements="20" coveredelements="20" complexity="0" loc="14" ncloc="14" packages="1" files="2" classes="2"/>
     <file name="index.ts" path="/Users/Niels/meteocontrol-mcp/src/index.ts">
-      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-      <line num="1" count="1" type="stmt"/>
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <line num="4" count="2" type="stmt"/>
+      <line num="5" count="2" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+    </file>
+    <file name="server.ts" path="/Users/Niels/meteocontrol-mcp/src/server.ts">
+      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+      <line num="7" count="5" type="stmt"/>
+      <line num="8" count="5" type="stmt"/>
+      <line num="11" count="5" type="stmt"/>
+      <line num="23" count="5" type="stmt"/>
+      <line num="27" count="5" type="stmt"/>
+      <line num="31" count="5" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="37" count="1" type="stmt"/>
+      <line num="38" count="1" type="stmt"/>
+      <line num="39" count="1" type="stmt"/>
     </file>
   </project>
 </coverage>

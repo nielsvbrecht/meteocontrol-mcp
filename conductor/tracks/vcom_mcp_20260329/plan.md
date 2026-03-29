@@ -4,7 +4,7 @@
 - [x] Task: Project Initialization (cb4ab2c)
   - [ ] Initialize Node.js project and install core dependencies (`@modelcontextprotocol/sdk`, `axios`, `typescript`).
   - [ ] Configure TypeScript, ESLint, Prettier, and Jest.
-- [ ] Task: Basic MCP Server Implementation
+- [~] Task: Basic MCP Server Implementation
   - [ ] Implement a basic MCP server structure with standard input/output transport.
   - [ ] Define the core server information and capabilities.
 - [ ] Task: Conductor - User Manual Verification 'Core Server Setup' (Protocol in workflow.md)

@@ -1,2 +1,3 @@
-export declare const sum: (a: number, b: number) => number;
+#!/usr/bin/env node
+export {};
 //# sourceMappingURL=index.d.ts.map
