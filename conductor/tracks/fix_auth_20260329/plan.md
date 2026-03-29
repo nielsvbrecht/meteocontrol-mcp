@@ -9,11 +9,11 @@
   - [ ] Update server tests to mock the new configuration.
 - [x] Task: Conductor - User Manual Verification 'API Client and Server Update' (Protocol in workflow.md) (ade34da)
 
-## Phase 2: Documentation and Verification
+## Phase 2: Documentation and Verification [checkpoint: 9cec266]
 - [x] Task: Update Project Documentation (7944827)
   - [ ] Update README.md with the new environment variable requirements.
   - [ ] Update `conductor/tech-stack.md` if necessary.
 - [x] Task: Final Verification (9546b31)
   - [ ] Update integration tests to use the new credential structure.
   - [ ] Run full project check (`npm run check`).
-- [~] Task: Conductor - User Manual Verification 'Documentation and Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Documentation and Verification' (Protocol in workflow.md) (9cec266)
