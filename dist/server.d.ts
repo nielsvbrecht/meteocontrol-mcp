@@ -7,6 +7,7 @@ export declare class MeteoControlServer {
     private setupHandlers;
     private handleGetEnergyData;
     private handleGetAlerts;
+    private handleGetAssetInfo;
     run(): Promise<void>;
 }
 //# sourceMappingURL=server.d.ts.map

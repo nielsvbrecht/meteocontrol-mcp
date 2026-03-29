@@ -18,7 +18,7 @@
 - [x] Task: Tool - Alert Retrieval (3ffa6cf)
   - [ ] Write unit tests for the alert retrieval tool.
   - [ ] Implement the tool to fetch and summarize active system alerts.
-- [ ] Task: Tool - Asset Information
+- [~] Task: Tool - Asset Information
   - [ ] Write unit tests for the asset information tool.
   - [ ] Implement the tool to retrieve detailed metadata for solar assets.
 - [ ] Task: Conductor - User Manual Verification 'API Integration and Tools' (Protocol in workflow.md)

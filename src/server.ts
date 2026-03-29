@@ -75,6 +75,20 @@ export class MeteoControlServer {
             required: ['systemKey'],
           },
         },
+        {
+          name: 'get_asset_info',
+          description: 'Get detailed configuration and metadata for solar assets',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              systemKey: {
+                type: 'string',
+                description: 'The unique key/ID of the solar system',
+              },
+            },
+            required: ['systemKey'],
+          },
+        },
       ],
     }));
 
@@ -87,6 +101,10 @@ export class MeteoControlServer {
 
       if (name === 'get_alerts') {
         return this.handleGetAlerts(args as Record<string, unknown>);
+      }
+
+      if (name === 'get_asset_info') {
+        return this.handleGetAssetInfo(args as Record<string, unknown>);
       }
 
       throw new McpError(ErrorCode.MethodNotFound, `Tool not found: ${name}`);
@@ -143,6 +161,33 @@ export class MeteoControlServer {
           {
             type: 'text',
             text: `Error fetching alerts: ${errorMessage}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  }
+
+  private async handleGetAssetInfo(args: Record<string, unknown>) {
+    try {
+      const { systemKey } = args;
+      const data = await this.api.get(`/systems/${systemKey}`, {});
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(data, null, 2),
+          },
+        ],
+      };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Error fetching asset info: ${errorMessage}`,
           },
         ],
         isError: true,
