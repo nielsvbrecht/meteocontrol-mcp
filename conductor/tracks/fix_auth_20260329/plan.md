@@ -1,13 +1,13 @@
 # Implementation Plan: Fix MeteoControl API Authentication Logic
 
 ## Phase 1: API Client and Server Update
-- [ ] Task: Update MeteoControlApi
+- [x] Task: Update MeteoControlApi (c1f5104)
   - [ ] Write failing tests for the new 3-credential auth logic.
   - [ ] Update `MeteoControlApi` class to handle `X-API-KEY` header and Basic Auth.
-- [ ] Task: Update MeteoControlServer
+- [x] Task: Update MeteoControlServer (f9185ba)
   - [ ] Update server to read 3 environment variables.
   - [ ] Update server tests to mock the new configuration.
-- [ ] Task: Conductor - User Manual Verification 'API Client and Server Update' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'API Client and Server Update' (Protocol in workflow.md)
 
 ## Phase 2: Documentation and Verification
 - [ ] Task: Update Project Documentation
