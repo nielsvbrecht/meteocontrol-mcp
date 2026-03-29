@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1774806381979" clover="3.2.0">
-  <project timestamp="1774806381979" name="All files">
+<coverage generated="1774806519401" clover="3.2.0">
+  <project timestamp="1774806519401" name="All files">
     <metrics statements="51" coveredstatements="51" conditionals="26" coveredconditionals="22" methods="11" coveredmethods="11" elements="88" coveredelements="84" complexity="0" loc="51" ncloc="51" packages="1" files="3" classes="3"/>
     <file name="api.ts" path="/Users/Niels/meteocontrol-mcp/src/api.ts">
       <metrics statements="5" coveredstatements="5" conditionals="6" coveredconditionals="5" methods="2" coveredmethods="2"/>
