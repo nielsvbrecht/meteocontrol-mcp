@@ -10,13 +10,16 @@ A Model Context Protocol (MCP) server that provides seamless interaction with th
 
 ## Prerequisites
 
-- Node.js 18 or higher.
+- Node.js 18 or higher (for local development).
+- Docker (for containerized deployment).
 - A MeteoControl VCOM API v2 account with:
   - **API Key**
   - **Username (E-mail address)**
   - **Password**
 
 ## Installation
+
+### Local Development
 
 1. Clone the repository:
    ```bash
@@ -47,7 +50,7 @@ METEOCONTROL_API_BASE_URL=https://api.meteocontrol.de/v2
 
 ## Usage
 
-### Running the Server
+### Running Locally
 
 To start the MCP server on `stdio`:
 
@@ -55,10 +58,27 @@ To start the MCP server on `stdio`:
 npm start
 ```
 
+### Running with Docker
+
+1. **Build the Docker image:**
+   ```bash
+   docker build -t meteocontrol-mcp .
+   ```
+
+2. **Run the container:**
+   ```bash
+   docker run --rm -it \
+     -e METEOCONTROL_API_KEY=your_api_key \
+     -e METEOCONTROL_USER=your_email \
+     -e METEOCONTROL_PASSWORD=your_password \
+     meteocontrol-mcp
+   ```
+
 ### Integration with Claude Desktop
 
 Add the following configuration to your `claude_desktop_config.json`:
 
+#### Local Node.js
 ```json
 {
   "mcpServers": {
@@ -70,6 +90,26 @@ Add the following configuration to your `claude_desktop_config.json`:
         "METEOCONTROL_USER": "your_email_address_here",
         "METEOCONTROL_PASSWORD": "your_password_here"
       }
+    }
+  }
+}
+```
+
+#### Docker
+```json
+{
+  "mcpServers": {
+    "meteocontrol-docker": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "METEOCONTROL_API_KEY=your_api_key_here",
+        "-e", "METEOCONTROL_USER=your_email_address_here",
+        "-e", "METEOCONTROL_PASSWORD=your_password_here",
+        "meteocontrol-mcp"
+      ]
     }
   }
 }
