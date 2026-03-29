@@ -11,7 +11,7 @@
 ## API Integration
 - **HTTP Client:** Axios (for robust, promise-based API requests)
 - **API Target:** MeteoControl VCOM API v2 (RESTful interface)
-- **Authentication:** OAuth2 (Client Credentials Flow or as required by VCOM API v2)
+- **Authentication:** 3-Credential Auth (X-API-KEY header + Basic Auth for User/Password)
 
 ## Testing and Quality Assurance
 - **Test Runner:** Jest (for unit and integration testing)

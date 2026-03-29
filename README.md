@@ -11,7 +11,10 @@ A Model Context Protocol (MCP) server that provides seamless interaction with th
 ## Prerequisites
 
 - Node.js 18 or higher.
-- A MeteoControl VCOM API v2 account with an API Key and API Secret.
+- A MeteoControl VCOM API v2 account with:
+  - **API Key**
+  - **Username (E-mail address)**
+  - **Password**
 
 ## Installation
 
@@ -37,7 +40,8 @@ Create a `.env` file in the project root and add your MeteoControl API credentia
 
 ```env
 METEOCONTROL_API_KEY=your_api_key_here
-METEOCONTROL_API_SECRET=your_api_secret_here
+METEOCONTROL_USER=your_email_address_here
+METEOCONTROL_PASSWORD=your_password_here
 METEOCONTROL_API_BASE_URL=https://api.meteocontrol.de/v2
 ```
 
@@ -63,7 +67,8 @@ Add the following configuration to your `claude_desktop_config.json`:
       "args": ["/path/to/meteocontrol-mcp/dist/index.js"],
       "env": {
         "METEOCONTROL_API_KEY": "your_api_key_here",
-        "METEOCONTROL_API_SECRET": "your_api_secret_here"
+        "METEOCONTROL_USER": "your_email_address_here",
+        "METEOCONTROL_PASSWORD": "your_password_here"
       }
     }
   }
