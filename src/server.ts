@@ -1,6 +1,11 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema, ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  ErrorCode,
+  McpError,
+} from '@modelcontextprotocol/sdk/types.js';
 import { MeteoControlApi } from './api.js';
 import dotenv from 'dotenv';
 
@@ -30,15 +35,17 @@ export class MeteoControlServer {
     );
 
     const apiKey = process.env['METEOCONTROL_API_KEY'] || '';
-    const apiSecret = process.env['METEOCONTROL_API_SECRET'] || '';
+    const user = process.env['METEOCONTROL_USER'] || '';
+    const password = process.env['METEOCONTROL_PASSWORD'] || '';
 
-    if (!apiKey || !apiSecret) {
-      console.warn('Warning: METEOCONTROL_API_KEY or METEOCONTROL_API_SECRET not set in environment.');
+    if (!apiKey || !user || !password) {
+      console.warn('Warning: MeteoControl credentials (API Key, User, Password) are not fully set in environment.');
     }
 
     this.api = new MeteoControlApi({
       apiKey,
-      apiSecret,
+      user,
+      password,
       baseUrl: process.env['METEOCONTROL_API_BASE_URL'] || 'https://api.meteocontrol.de/v2',
     });
 

@@ -16,6 +16,11 @@ jest.unstable_mockModule('./api.js', () => ({
   })),
 }));
 
+// Set env vars for testing
+process.env['METEOCONTROL_API_KEY'] = 'test-key';
+process.env['METEOCONTROL_USER'] = 'test-user';
+process.env['METEOCONTROL_PASSWORD'] = 'test-password';
+
 const { MeteoControlServer } = await import('./server.js');
 const { CallToolRequestSchema } = await import('@modelcontextprotocol/sdk/types.js');
 
@@ -25,60 +30,53 @@ describe('Tool Integration Tests', () => {
     new MeteoControlServer();
   });
 
+  const getHandler = () => mockSetRequestHandler.mock.calls.find(c => c[0] === CallToolRequestSchema)![1] as Function;
+
   it('should successfully handle a get_energy_data tool call', async () => {
     const mockData = { energy: 1234.5 };
     mockGet.mockResolvedValue(mockData);
+    const handler = getHandler();
 
-    const callToolHandler = mockSetRequestHandler.mock.calls.find(
-      (call: unknown[]) => call[0] === CallToolRequestSchema,
-    )![1] as (request: { params: { name: string; arguments: Record<string, unknown> } }) => Promise<unknown>;
-
-    const result = (await callToolHandler({
+    const result = (await handler({
       params: {
         name: 'get_energy_data',
         arguments: { systemKey: 'sys1', from: '2024-01-01', to: '2024-01-02' },
       },
     })) as { content: Array<{ text: string }> };
 
-    expect(mockGet).toHaveBeenCalled();
+    expect(mockGet).toHaveBeenCalledWith('/systems/sys1/metrics/energy', expect.any(Object));
     expect(result.content[0]!.text).toBe(JSON.stringify(mockData, null, 2));
   });
 
   it('should successfully handle a get_alerts tool call', async () => {
     const mockData = { alerts: [] };
     mockGet.mockResolvedValue(mockData);
+    const handler = getHandler();
 
-    const callToolHandler = mockSetRequestHandler.mock.calls.find(
-      (call: unknown[]) => call[0] === CallToolRequestSchema,
-    )![1] as (request: { params: { name: string; arguments: Record<string, unknown> } }) => Promise<unknown>;
-
-    const result = (await callToolHandler({
+    const result = (await handler({
       params: {
         name: 'get_alerts',
         arguments: { systemKey: 'sys1' },
       },
     })) as { content: Array<{ text: string }> };
 
-    expect(mockGet).toHaveBeenCalled();
+    expect(mockGet).toHaveBeenCalledWith('/systems/sys1/alerts', expect.any(Object));
     expect(result.content[0]!.text).toBe(JSON.stringify(mockData, null, 2));
   });
 
   it('should successfully handle a get_asset_info tool call', async () => {
     const mockData = { id: 'sys1', name: 'My System' };
     mockGet.mockResolvedValue(mockData);
+    const handler = getHandler();
 
-    const callToolHandler = mockSetRequestHandler.mock.calls.find(
-      (call: unknown[]) => call[0] === CallToolRequestSchema,
-    )![1] as (request: { params: { name: string; arguments: Record<string, unknown> } }) => Promise<unknown>;
-
-    const result = (await callToolHandler({
+    const result = (await handler({
       params: {
         name: 'get_asset_info',
         arguments: { systemKey: 'sys1' },
       },
     })) as { content: Array<{ text: string }> };
 
-    expect(mockGet).toHaveBeenCalled();
+    expect(mockGet).toHaveBeenCalledWith('/systems/sys1', expect.any(Object));
     expect(result.content[0]!.text).toBe(JSON.stringify(mockData, null, 2));
   });
 });

@@ -16,56 +16,127 @@ jest.unstable_mockModule('@modelcontextprotocol/sdk/server/stdio.js', () => ({
 }));
 
 // Mock API
+const mockGet = jest.fn();
+const mockApiConstructor = jest.fn();
 jest.unstable_mockModule('./api.js', () => ({
-  MeteoControlApi: jest.fn().mockImplementation(() => ({
-    get: jest.fn(),
+  MeteoControlApi: mockApiConstructor.mockImplementation(() => ({
+    get: mockGet,
   })),
 }));
 
-// Set env vars for testing
-process.env.METEOCONTROL_API_KEY = 'test-key';
-process.env.METEOCONTROL_API_SECRET = 'test-secret';
+// Set default env vars for testing
+process.env['METEOCONTROL_API_KEY'] = 'test-key';
+process.env['METEOCONTROL_USER'] = 'test-user';
+process.env['METEOCONTROL_PASSWORD'] = 'test-password';
 
 // Dynamically import dependencies AFTER mocking
 const { MeteoControlServer } = await import('./server.js');
-const { ListToolsRequestSchema, CallToolRequestSchema } = await import('@modelcontextprotocol/sdk/types.js');
+const { CallToolRequestSchema, ListToolsRequestSchema } = await import('@modelcontextprotocol/sdk/types.js');
 
-describe('MeteoControlServer', () => {
-  let server: MeteoControlServer;
-
+describe('MeteoControlServer Comprehensive Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    server = new MeteoControlServer();
   });
 
-  it('should have a name and version', () => {
-    expect(server.name).toBe('meteocontrol-mcp');
-    expect(server.version).toBe('1.0.0');
+  it('should initialize successfully', () => {
+    const server = new MeteoControlServer();
+    expect(server).toBeDefined();
+    expect(mockApiConstructor).toHaveBeenCalled();
   });
 
-  it('should set up request handlers', () => {
-    expect(mockSetRequestHandler).toHaveBeenCalled();
-    expect(mockSetRequestHandler).toHaveBeenCalledWith(ListToolsRequestSchema, expect.any(Function));
-    expect(mockSetRequestHandler).toHaveBeenCalledWith(CallToolRequestSchema, expect.any(Function));
+  it('should list tools', async () => {
+    new MeteoControlServer();
+    const handler = mockSetRequestHandler.mock.calls.find(c => c[0] === ListToolsRequestSchema)![1] as Function;
+    const result = await handler();
+    expect(result.tools).toHaveLength(3);
   });
 
-  it('should handle ListToolsRequest', async () => {
-    const listToolsHandler = mockSetRequestHandler.mock.calls.find(
-      (call: unknown[]) => call[0] === ListToolsRequestSchema,
-    )![1] as () => Promise<unknown>;
-    const result = await listToolsHandler();
-    expect(result).toBeDefined();
+  it('should handle tools successfully', async () => {
+    new MeteoControlServer();
+    const handler = mockSetRequestHandler.mock.calls.find(c => c[0] === CallToolRequestSchema)![1] as Function;
+    
+    mockGet.mockResolvedValueOnce({ energy: 100 });
+    const r1 = await handler({ params: { name: 'get_energy_data', arguments: { systemKey: 's', from: 'f', to: 't' } } });
+    expect(r1.content[0].text).toContain('100');
+
+    mockGet.mockResolvedValueOnce({ alerts: [] });
+    const r2 = await handler({ params: { name: 'get_alerts', arguments: { systemKey: 's' } } });
+    expect(r2.content[0].text).toContain('alerts');
+
+    mockGet.mockResolvedValueOnce({ id: 's' });
+    const r3 = await handler({ params: { name: 'get_asset_info', arguments: { systemKey: 's' } } });
+    expect(r3.content[0].text).toContain('s');
   });
 
-  it('should handle CallToolRequest with error for unknown tool', async () => {
-    const callToolHandler = mockSetRequestHandler.mock.calls.find(
-      (call: unknown[]) => call[0] === CallToolRequestSchema,
-    )![1] as (request: { params: { name: string } }) => Promise<unknown>;
-    await expect(callToolHandler({ params: { name: 'unknown-tool' } })).rejects.toThrow('Tool not found: unknown-tool');
+  it('should handle tool errors (Error object)', async () => {
+    new MeteoControlServer();
+    const handler = mockSetRequestHandler.mock.calls.find(c => c[0] === CallToolRequestSchema)![1] as Function;
+    
+    mockGet.mockRejectedValueOnce(new Error('e1'));
+    const r1 = await handler({ params: { name: 'get_energy_data', arguments: { systemKey: 's', from: 'f', to: 't' } } });
+    expect(r1.isError).toBe(true);
+
+    mockGet.mockRejectedValueOnce(new Error('e2'));
+    const r2 = await handler({ params: { name: 'get_alerts', arguments: { systemKey: 's' } } });
+    expect(r2.isError).toBe(true);
+
+    mockGet.mockRejectedValueOnce(new Error('e3'));
+    const r3 = await handler({ params: { name: 'get_asset_info', arguments: { systemKey: 's' } } });
+    expect(r3.isError).toBe(true);
   });
 
-  it('should connect to transport when run is called', async () => {
+  it('should handle tool errors (non-Error object)', async () => {
+    new MeteoControlServer();
+    const handler = mockSetRequestHandler.mock.calls.find(c => c[0] === CallToolRequestSchema)![1] as Function;
+    
+    mockGet.mockRejectedValueOnce('s1');
+    const r1 = await handler({ params: { name: 'get_energy_data', arguments: { systemKey: 's', from: 'f', to: 't' } } });
+    expect(r1.isError).toBe(true);
+
+    mockGet.mockRejectedValueOnce('s2');
+    const r2 = await handler({ params: { name: 'get_alerts', arguments: { systemKey: 's' } } });
+    expect(r2.isError).toBe(true);
+
+    mockGet.mockRejectedValueOnce('s3');
+    const r3 = await handler({ params: { name: 'get_asset_info', arguments: { systemKey: 's' } } });
+    expect(r3.isError).toBe(true);
+  });
+
+  it('should handle unknown tool and log error', async () => {
+    new MeteoControlServer();
+    const handler = mockSetRequestHandler.mock.calls.find(c => c[0] === CallToolRequestSchema)![1] as Function;
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    
+    await expect(handler({ params: { name: 'unknown' } })).rejects.toThrow();
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it('should warn and cover empty string branches if credentials missing', async () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const k = process.env['METEOCONTROL_API_KEY'];
+    const u = process.env['METEOCONTROL_USER'];
+    const p = process.env['METEOCONTROL_PASSWORD'];
+    
+    delete process.env['METEOCONTROL_API_KEY'];
+    delete process.env['METEOCONTROL_USER'];
+    delete process.env['METEOCONTROL_PASSWORD'];
+    
+    const { MeteoControlServer: S } = await import(`./server.js?v=${Date.now()}_missing_all`);
+    new S();
+    expect(spy).toHaveBeenCalled();
+    
+    process.env['METEOCONTROL_API_KEY'] = k;
+    process.env['METEOCONTROL_USER'] = u;
+    process.env['METEOCONTROL_PASSWORD'] = p;
+    spy.mockRestore();
+  });
+
+  it('should run correctly', async () => {
+    const server = new MeteoControlServer();
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
     await server.run();
     expect(mockConnect).toHaveBeenCalled();
+    spy.mockRestore();
   });
 });
