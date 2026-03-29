@@ -10,9 +10,9 @@
 - [x] Task: Conductor - User Manual Verification 'Dockerization' (Protocol in workflow.md) (ff3eaa2)
 
 ## Phase 2: Refinement and Documentation
-- [ ] Task: Update Project Documentation
+- [x] Task: Update Project Documentation (6e889db)
   - [ ] Update `README.md` with Docker build and run instructions.
   - [ ] Add a "Deployment" section to the README.
-- [ ] Task: Final Verification
+- [~] Task: Final Verification
   - [ ] Verify that the containerized server correctly handles tool calls (using the MCP inspector if possible, or manual JSON-RPC).
 - [ ] Task: Conductor - User Manual Verification 'Refinement and Documentation' (Protocol in workflow.md)

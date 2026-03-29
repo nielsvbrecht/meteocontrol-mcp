@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1774810696190" clover="3.2.0">
-  <project timestamp="1774810696190" name="All files">
-    <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="0" coveredelements="0" complexity="0" loc="0" ncloc="0" packages="0" files="0" classes="0"/>
+<coverage generated="1774811086908" clover="3.2.0">
+  <project timestamp="1774811086908" name="All files">
+    <metrics statements="52" coveredstatements="52" conditionals="30" coveredconditionals="30" methods="11" coveredmethods="11" elements="93" coveredelements="93" complexity="0" loc="52" ncloc="52" packages="1" files="3" classes="3"/>
+    <file name="api.ts" path="/Users/Niels/meteocontrol-mcp/src/api.ts">
+      <metrics statements="5" coveredstatements="5" conditionals="7" coveredconditionals="7" methods="2" coveredmethods="2"/>
+      <line num="14" count="8" type="cond" truecount="5" falsecount="0"/>
+      <line num="15" count="3" type="stmt"/>
+      <line num="18" count="5" type="stmt"/>
+      <line num="31" count="1" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+    </file>
+    <file name="index.ts" path="/Users/Niels/meteocontrol-mcp/src/index.ts">
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <line num="4" count="2" type="stmt"/>
+      <line num="5" count="2" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+    </file>
+    <file name="server.ts" path="/Users/Niels/meteocontrol-mcp/src/server.ts">
+      <metrics statements="43" coveredstatements="43" conditionals="23" coveredconditionals="23" methods="8" coveredmethods="8"/>
+      <line num="7" count="6" type="stmt"/>
+      <line num="16" count="20" type="stmt"/>
+      <line num="17" count="20" type="stmt"/>
+      <line num="20" count="20" type="stmt"/>
+      <line num="32" count="20" type="cond" truecount="2" falsecount="0"/>
+      <line num="33" count="20" type="cond" truecount="2" falsecount="0"/>
+      <line num="34" count="20" type="cond" truecount="2" falsecount="0"/>
+      <line num="36" count="20" type="cond" truecount="5" falsecount="0"/>
+      <line num="37" count="10" type="stmt"/>
+      <line num="40" count="20" type="stmt"/>
+      <line num="47" count="20" type="stmt"/>
+      <line num="51" count="20" type="stmt"/>
+      <line num="109" count="20" type="stmt"/>
+      <line num="110" count="19" type="stmt"/>
+      <line num="112" count="19" type="stmt"/>
+      <line num="113" count="19" type="cond" truecount="4" falsecount="0"/>
+      <line num="115" count="6" type="stmt"/>
+      <line num="117" count="6" type="stmt"/>
+      <line num="119" count="6" type="stmt"/>
+      <line num="121" count="1" type="stmt"/>
+      <line num="124" count="1" type="stmt"/>
+      <line num="125" count="1" type="stmt"/>
+      <line num="131" count="6" type="stmt"/>
+      <line num="132" count="6" type="stmt"/>
+      <line num="133" count="6" type="stmt"/>
+      <line num="138" count="3" type="stmt"/>
+      <line num="147" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="148" count="3" type="stmt"/>
+      <line num="161" count="6" type="stmt"/>
+      <line num="162" count="6" type="stmt"/>
+      <line num="163" count="6" type="stmt"/>
+      <line num="165" count="3" type="stmt"/>
+      <line num="174" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="175" count="3" type="stmt"/>
+      <line num="188" count="6" type="stmt"/>
+      <line num="189" count="6" type="stmt"/>
+      <line num="190" count="6" type="stmt"/>
+      <line num="192" count="3" type="stmt"/>
+      <line num="201" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="202" count="3" type="stmt"/>
+      <line num="215" count="1" type="stmt"/>
+      <line num="216" count="1" type="stmt"/>
+      <line num="217" count="1" type="stmt"/>
+    </file>
   </project>
 </coverage>
