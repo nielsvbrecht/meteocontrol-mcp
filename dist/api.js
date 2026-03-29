@@ -2,14 +2,17 @@ import axios from 'axios';
 export class MeteoControlApi {
     client;
     constructor(config) {
-        if (!config.apiKey || !config.apiSecret) {
-            throw new Error('MeteoControl API key and secret are required');
+        if (!config.apiKey || !config.user || !config.password) {
+            throw new Error('MeteoControl API key, user, and password are required');
         }
         this.client = axios.create({
             baseURL: config.baseUrl || 'https://api.meteocontrol.de/v2',
+            headers: {
+                'X-API-KEY': config.apiKey,
+            },
             auth: {
-                username: config.apiKey,
-                password: config.apiSecret,
+                username: config.user,
+                password: config.password,
             },
         });
     }

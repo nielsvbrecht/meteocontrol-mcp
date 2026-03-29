@@ -1,6 +1,7 @@
 export interface ApiConfig {
     apiKey: string;
-    apiSecret: string;
+    user: string;
+    password: string;
     baseUrl: string;
 }
 export declare class MeteoControlApi {
