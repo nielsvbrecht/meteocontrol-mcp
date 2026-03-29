@@ -21,7 +21,8 @@ describe('MeteoControlApi', () => {
   let api: MockApi;
   const mockConfig = {
     apiKey: 'test-api-key',
-    apiSecret: 'test-api-secret',
+    user: 'test-user',
+    password: 'test-password',
     baseUrl: 'https://api.meteocontrol.de/v2',
   };
 
@@ -35,17 +36,32 @@ describe('MeteoControlApi', () => {
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         baseURL: mockConfig.baseUrl,
+        headers: {
+          'X-API-KEY': mockConfig.apiKey,
+        },
         auth: {
-          username: mockConfig.apiKey,
-          password: mockConfig.apiSecret,
+          username: mockConfig.user,
+          password: mockConfig.password,
         },
       }),
     );
   });
 
-  it('should throw error if apiKey or apiSecret is missing', async () => {
+  it('should use default baseUrl if not provided', async () => {
     const { MeteoControlApi: ApiClass } = await import('./api.js');
-    expect(() => new ApiClass({ apiKey: '', apiSecret: '', baseUrl: '' })).toThrow();
+    new ApiClass({ apiKey: 'key', user: 'user', password: 'pwd', baseUrl: '' });
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        baseURL: 'https://api.meteocontrol.de/v2',
+      }),
+    );
+  });
+
+  it('should throw error if required credentials are missing', async () => {
+    const { MeteoControlApi: ApiClass } = await import('./api.js');
+    expect(() => new ApiClass({ apiKey: '', user: '', password: '', baseUrl: '' })).toThrow();
+    expect(() => new ApiClass({ apiKey: 'key', user: '', password: '', baseUrl: '' })).toThrow();
+    expect(() => new ApiClass({ apiKey: 'key', user: 'user', password: '', baseUrl: '' })).toThrow();
   });
 
   it('should perform GET request', async () => {
