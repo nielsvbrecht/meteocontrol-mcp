@@ -1,4 +1,4 @@
-# Track docker_mcp_20260329 Context
+# Track github_cicd_20260329 Context
 
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)

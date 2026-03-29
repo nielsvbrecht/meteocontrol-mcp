@@ -11,3 +11,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Fix MeteoControl API authentication logic**
   *Link: [./tracks/fix_auth_20260329/](./tracks/fix_auth_20260329/)*
+
+---
+
+- [ ] **Track: GitHub Integration and CI/CD Pipelines**
+  *Link: [./tracks/github_cicd_20260329/](./tracks/github_cicd_20260329/)*
