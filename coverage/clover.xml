@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1774804244960" clover="3.2.0">
-  <project timestamp="1774804244960" name="All files">
-    <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6" elements="20" coveredelements="20" complexity="0" loc="14" ncloc="14" packages="1" files="2" classes="2"/>
+<coverage generated="1774804546818" clover="3.2.0">
+  <project timestamp="1774804546818" name="All files">
+    <metrics statements="19" coveredstatements="19" conditionals="6" coveredconditionals="5" methods="8" coveredmethods="8" elements="33" coveredelements="32" complexity="0" loc="19" ncloc="19" packages="1" files="3" classes="3"/>
+    <file name="api.ts" path="/Users/Niels/meteocontrol-mcp/src/api.ts">
+      <metrics statements="5" coveredstatements="5" conditionals="6" coveredconditionals="5" methods="2" coveredmethods="2"/>
+      <line num="13" count="4" type="cond" truecount="4" falsecount="0"/>
+      <line num="14" count="1" type="stmt"/>
+      <line num="17" count="3" type="stmt"/>
+      <line num="27" count="1" type="stmt"/>
+      <line num="28" count="1" type="stmt"/>
+    </file>
     <file name="index.ts" path="/Users/Niels/meteocontrol-mcp/src/index.ts">
       <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="2" type="stmt"/>
