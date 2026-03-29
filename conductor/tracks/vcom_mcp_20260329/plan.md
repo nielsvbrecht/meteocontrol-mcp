@@ -12,7 +12,7 @@
 ## Phase 2: API Integration and Tools
 - [x] Task: VCOM API v2 Authentication (7aa7422)
   - [ ] Implement secure credential handling and OAuth2 authentication for the VCOM API v2.
-- [ ] Task: Tool - Energy Monitoring
+- [~] Task: Tool - Energy Monitoring
   - [ ] Write unit tests for the energy monitoring tool.
   - [ ] Implement the tool to fetch real-time power and energy data from the VCOM API v2.
 - [ ] Task: Tool - Alert Retrieval

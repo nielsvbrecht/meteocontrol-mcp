@@ -1,9 +1,14 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema, ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { MeteoControlApi } from './api.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export class MeteoControlServer {
   private server: Server;
+  private api: MeteoControlApi;
   public readonly name = 'meteocontrol-mcp';
   public readonly version = '1.0.0';
 
@@ -20,17 +25,84 @@ export class MeteoControlServer {
       },
     );
 
+    const apiKey = process.env.METEOCONTROL_API_KEY || '';
+    const apiSecret = process.env.METEOCONTROL_API_SECRET || '';
+    this.api = new MeteoControlApi({
+      apiKey,
+      apiSecret,
+      baseUrl: 'https://api.meteocontrol.de/v2',
+    });
+
     this.setupHandlers();
   }
 
   private setupHandlers() {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: [],
+      tools: [
+        {
+          name: 'get_energy_data',
+          description: 'Get energy and power metrics for a solar system',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              systemKey: {
+                type: 'string',
+                description: 'The unique key/ID of the solar system',
+              },
+              from: {
+                type: 'string',
+                description: 'Start date (ISO 8601)',
+              },
+              to: {
+                type: 'string',
+                description: 'End date (ISO 8601)',
+              },
+            },
+            required: ['systemKey', 'from', 'to'],
+          },
+        },
+      ],
     }));
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      throw new Error(`Tool not found: ${request.params.name}`);
+      const { name, arguments: args } = request.params;
+
+      if (name === 'get_energy_data') {
+        return this.handleGetEnergyData(args as Record<string, unknown>);
+      }
+
+      throw new McpError(ErrorCode.MethodNotFound, `Tool not found: ${name}`);
     });
+  }
+
+  private async handleGetEnergyData(args: Record<string, unknown>) {
+    try {
+      const { systemKey, from, to } = args;
+      const data = await this.api.get(`/systems/${systemKey}/metrics/energy`, {
+        from,
+        to,
+      } as Record<string, unknown>);
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(data, null, 2),
+          },
+        ],
+      };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Error fetching energy data: ${errorMessage}`,
+          },
+        ],
+        isError: true,
+      };
+    }
   }
 
   async run() {

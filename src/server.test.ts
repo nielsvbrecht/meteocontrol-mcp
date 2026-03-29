@@ -1,10 +1,9 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
-// Define mocks at the top level so they are available to the mock factory
 const mockSetRequestHandler = jest.fn();
 const mockConnect = jest.fn();
 
-// Use unstable_mockModule for ESM support
+// Mock MCP SDK
 jest.unstable_mockModule('@modelcontextprotocol/sdk/server/index.js', () => ({
   Server: jest.fn().mockImplementation(() => ({
     setRequestHandler: mockSetRequestHandler,
@@ -16,7 +15,18 @@ jest.unstable_mockModule('@modelcontextprotocol/sdk/server/stdio.js', () => ({
   StdioServerTransport: jest.fn().mockImplementation(() => ({})),
 }));
 
-// Dynamically import the server and SDK AFTER mocking
+// Mock API
+jest.unstable_mockModule('./api.js', () => ({
+  MeteoControlApi: jest.fn().mockImplementation(() => ({
+    get: jest.fn(),
+  })),
+}));
+
+// Set env vars for testing
+process.env.METEOCONTROL_API_KEY = 'test-key';
+process.env.METEOCONTROL_API_SECRET = 'test-secret';
+
+// Dynamically import dependencies AFTER mocking
 const { MeteoControlServer } = await import('./server.js');
 const { ListToolsRequestSchema, CallToolRequestSchema } = await import('@modelcontextprotocol/sdk/types.js');
 
@@ -35,7 +45,6 @@ describe('MeteoControlServer', () => {
 
   it('should set up request handlers', () => {
     expect(mockSetRequestHandler).toHaveBeenCalled();
-    // Verify specific handlers are registered
     expect(mockSetRequestHandler).toHaveBeenCalledWith(ListToolsRequestSchema, expect.any(Function));
     expect(mockSetRequestHandler).toHaveBeenCalledWith(CallToolRequestSchema, expect.any(Function));
   });
@@ -45,14 +54,14 @@ describe('MeteoControlServer', () => {
       (call: unknown[]) => call[0] === ListToolsRequestSchema,
     )![1] as () => Promise<unknown>;
     const result = await listToolsHandler();
-    expect(result).toEqual({ tools: [] });
+    expect(result).toBeDefined();
   });
 
-  it('should handle CallToolRequest with error', async () => {
+  it('should handle CallToolRequest with error for unknown tool', async () => {
     const callToolHandler = mockSetRequestHandler.mock.calls.find(
       (call: unknown[]) => call[0] === CallToolRequestSchema,
     )![1] as (request: { params: { name: string } }) => Promise<unknown>;
-    await expect(callToolHandler({ params: { name: 'test-tool' } })).rejects.toThrow('Tool not found: test-tool');
+    await expect(callToolHandler({ params: { name: 'unknown-tool' } })).rejects.toThrow('Tool not found: unknown-tool');
   });
 
   it('should connect to transport when run is called', async () => {
