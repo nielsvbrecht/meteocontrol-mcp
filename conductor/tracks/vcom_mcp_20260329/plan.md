@@ -10,7 +10,7 @@
 - [x] Task: Conductor - User Manual Verification 'Core Server Setup' (Protocol in workflow.md) (ddecf86)
 
 ## Phase 2: API Integration and Tools
-- [~] Task: VCOM API v2 Authentication
+- [x] Task: VCOM API v2 Authentication (7aa7422)
   - [ ] Implement secure credential handling and OAuth2 authentication for the VCOM API v2.
 - [ ] Task: Tool - Energy Monitoring
   - [ ] Write unit tests for the energy monitoring tool.
