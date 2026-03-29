@@ -52,12 +52,29 @@ export class MeteoControlServer {
                         required: ['systemKey', 'from', 'to'],
                     },
                 },
+                {
+                    name: 'get_alerts',
+                    description: 'Get active system alerts for a solar system',
+                    inputSchema: {
+                        type: 'object',
+                        properties: {
+                            systemKey: {
+                                type: 'string',
+                                description: 'The unique key/ID of the solar system',
+                            },
+                        },
+                        required: ['systemKey'],
+                    },
+                },
             ],
         }));
         this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const { name, arguments: args } = request.params;
             if (name === 'get_energy_data') {
                 return this.handleGetEnergyData(args);
+            }
+            if (name === 'get_alerts') {
+                return this.handleGetAlerts(args);
             }
             throw new McpError(ErrorCode.MethodNotFound, `Tool not found: ${name}`);
         });
@@ -85,6 +102,32 @@ export class MeteoControlServer {
                     {
                         type: 'text',
                         text: `Error fetching energy data: ${errorMessage}`,
+                    },
+                ],
+                isError: true,
+            };
+        }
+    }
+    async handleGetAlerts(args) {
+        try {
+            const { systemKey } = args;
+            const data = await this.api.get(`/systems/${systemKey}/alerts`, {});
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify(data, null, 2),
+                    },
+                ],
+            };
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: `Error fetching alerts: ${errorMessage}`,
                     },
                 ],
                 isError: true,

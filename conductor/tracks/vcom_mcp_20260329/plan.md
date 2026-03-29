@@ -15,7 +15,7 @@
 - [x] Task: Tool - Energy Monitoring (fe89eb7)
   - [ ] Write unit tests for the energy monitoring tool.
   - [ ] Implement the tool to fetch real-time power and energy data from the VCOM API v2.
-- [ ] Task: Tool - Alert Retrieval
+- [~] Task: Tool - Alert Retrieval
   - [ ] Write unit tests for the alert retrieval tool.
   - [ ] Implement the tool to fetch and summarize active system alerts.
 - [ ] Task: Tool - Asset Information
