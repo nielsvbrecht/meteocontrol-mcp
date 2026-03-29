@@ -4,6 +4,10 @@ import { CallToolRequestSchema, ListToolsRequestSchema, ErrorCode, McpError } fr
 import { MeteoControlApi } from './api.js';
 import dotenv from 'dotenv';
 dotenv.config();
+/**
+ * MeteoControl MCP Server
+ * Provides access to solar installation data via the VCOM API v2.
+ */
 export class MeteoControlServer {
     server;
     api;
@@ -18,12 +22,15 @@ export class MeteoControlServer {
                 tools: {},
             },
         });
-        const apiKey = process.env.METEOCONTROL_API_KEY || '';
-        const apiSecret = process.env.METEOCONTROL_API_SECRET || '';
+        const apiKey = process.env['METEOCONTROL_API_KEY'] || '';
+        const apiSecret = process.env['METEOCONTROL_API_SECRET'] || '';
+        if (!apiKey || !apiSecret) {
+            console.warn('Warning: METEOCONTROL_API_KEY or METEOCONTROL_API_SECRET not set in environment.');
+        }
         this.api = new MeteoControlApi({
             apiKey,
             apiSecret,
-            baseUrl: 'https://api.meteocontrol.de/v2',
+            baseUrl: process.env['METEOCONTROL_API_BASE_URL'] || 'https://api.meteocontrol.de/v2',
         });
         this.setupHandlers();
     }
@@ -32,21 +39,21 @@ export class MeteoControlServer {
             tools: [
                 {
                     name: 'get_energy_data',
-                    description: 'Get energy and power metrics for a solar system',
+                    description: 'Retrieve real-time and historical energy and power metrics for a specific solar installation.',
                     inputSchema: {
                         type: 'object',
                         properties: {
                             systemKey: {
                                 type: 'string',
-                                description: 'The unique key/ID of the solar system',
+                                description: 'The unique key/ID of the solar system (e.g., from VCOM dashboard).',
                             },
                             from: {
                                 type: 'string',
-                                description: 'Start date (ISO 8601)',
+                                description: 'The start date and time for the data request (ISO 8601 format, e.g., 2024-01-01T00:00:00Z).',
                             },
                             to: {
                                 type: 'string',
-                                description: 'End date (ISO 8601)',
+                                description: 'The end date and time for the data request (ISO 8601 format, e.g., 2024-01-02T00:00:00Z).',
                             },
                         },
                         required: ['systemKey', 'from', 'to'],
@@ -54,13 +61,13 @@ export class MeteoControlServer {
                 },
                 {
                     name: 'get_alerts',
-                    description: 'Get active system alerts for a solar system',
+                    description: 'Fetch active system alerts and historical event logs for a connected solar installation.',
                     inputSchema: {
                         type: 'object',
                         properties: {
                             systemKey: {
                                 type: 'string',
-                                description: 'The unique key/ID of the solar system',
+                                description: 'The unique key/ID of the solar system.',
                             },
                         },
                         required: ['systemKey'],
@@ -68,13 +75,13 @@ export class MeteoControlServer {
                 },
                 {
                     name: 'get_asset_info',
-                    description: 'Get detailed configuration and metadata for solar assets',
+                    description: 'Get comprehensive configuration details and metadata for solar assets, including panels and inverters.',
                     inputSchema: {
                         type: 'object',
                         properties: {
                             systemKey: {
                                 type: 'string',
-                                description: 'The unique key/ID of the solar system',
+                                description: 'The unique key/ID of the solar system.',
                             },
                         },
                         required: ['systemKey'],
@@ -84,16 +91,22 @@ export class MeteoControlServer {
         }));
         this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const { name, arguments: args } = request.params;
-            if (name === 'get_energy_data') {
-                return this.handleGetEnergyData(args);
+            try {
+                switch (name) {
+                    case 'get_energy_data':
+                        return await this.handleGetEnergyData(args);
+                    case 'get_alerts':
+                        return await this.handleGetAlerts(args);
+                    case 'get_asset_info':
+                        return await this.handleGetAssetInfo(args);
+                    default:
+                        throw new McpError(ErrorCode.MethodNotFound, `Tool not found: ${name}`);
+                }
             }
-            if (name === 'get_alerts') {
-                return this.handleGetAlerts(args);
+            catch (error) {
+                console.error(`Error executing tool ${name}:`, error);
+                throw error;
             }
-            if (name === 'get_asset_info') {
-                return this.handleGetAssetInfo(args);
-            }
-            throw new McpError(ErrorCode.MethodNotFound, `Tool not found: ${name}`);
         });
     }
     async handleGetEnergyData(args) {
@@ -180,7 +193,7 @@ export class MeteoControlServer {
     async run() {
         const transport = new StdioServerTransport();
         await this.server.connect(transport);
-        console.error(`MeteoControl MCP server running on stdio`);
+        console.error(`MeteoControl MCP server v${this.version} running on stdio`);
     }
 }
 //# sourceMappingURL=server.js.map

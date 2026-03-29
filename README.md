@@ -1,0 +1,82 @@
+# MeteoControl MCP Server
+
+A Model Context Protocol (MCP) server that provides seamless interaction with the MeteoControl VCOM API v2. This server allows users to ask natural language questions about their solar array installations through MCP-enabled clients (like Claude Desktop).
+
+## Features
+
+- **Energy Monitoring (`get_energy_data`):** Retrieve real-time and historical energy and power metrics.
+- **Alert Retrieval (`get_alerts`):** Fetch active system alerts and historical event logs.
+- **Asset Information (`get_asset_info`):** Get detailed configuration and metadata for solar assets (panels, inverters, sensors).
+
+## Prerequisites
+
+- Node.js 18 or higher.
+- A MeteoControl VCOM API v2 account with an API Key and API Secret.
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/meteocontrol-mcp.git
+   cd meteocontrol-mcp
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Build the project:
+   ```bash
+   npm run build
+   ```
+
+## Configuration
+
+Create a `.env` file in the project root and add your MeteoControl API credentials:
+
+```env
+METEOCONTROL_API_KEY=your_api_key_here
+METEOCONTROL_API_SECRET=your_api_secret_here
+METEOCONTROL_API_BASE_URL=https://api.meteocontrol.de/v2
+```
+
+## Usage
+
+### Running the Server
+
+To start the MCP server on `stdio`:
+
+```bash
+npm start
+```
+
+### Integration with Claude Desktop
+
+Add the following configuration to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "meteocontrol": {
+      "command": "node",
+      "args": ["/path/to/meteocontrol-mcp/dist/index.js"],
+      "env": {
+        "METEOCONTROL_API_KEY": "your_api_key_here",
+        "METEOCONTROL_API_SECRET": "your_api_secret_here"
+      }
+    }
+  }
+}
+```
+
+## Development
+
+- **Run tests:** `npm test`
+- **Lint code:** `npm run lint`
+- **Format code:** `npm run format`
+- **Full check:** `npm run check`
+
+## License
+
+This project is licensed under the ISC License.

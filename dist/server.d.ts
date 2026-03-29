@@ -1,3 +1,7 @@
+/**
+ * MeteoControl MCP Server
+ * Provides access to solar installation data via the VCOM API v2.
+ */
 export declare class MeteoControlServer {
     private server;
     private api;
