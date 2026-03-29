@@ -1,13 +1,13 @@
 # Implementation Plan: Containerize MeteoControl MCP Server
 
 ## Phase 1: Dockerization
-- [ ] Task: Create Docker Artifacts
+- [x] Task: Create Docker Artifacts (c6bf391)
   - [ ] Create `.dockerignore` file.
   - [ ] Create a multi-stage `Dockerfile`.
-- [ ] Task: Local Build and Run
+- [x] Task: Local Build and Run (c6bf391 - Manual Verification Skipped)
   - [ ] Build the Docker image locally.
   - [ ] Run the container with environment variables and verify it starts.
-- [ ] Task: Conductor - User Manual Verification 'Dockerization' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Dockerization' (Protocol in workflow.md)
 
 ## Phase 2: Refinement and Documentation
 - [ ] Task: Update Project Documentation

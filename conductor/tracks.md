@@ -14,5 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Containerize MeteoControl MCP server**
+- [~] **Track: Containerize MeteoControl MCP server**
   *Link: [./tracks/docker_mcp_20260329/](./tracks/docker_mcp_20260329/)*
