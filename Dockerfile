@@ -17,7 +17,13 @@ RUN npm run build
 # Production stage
 FROM node:18-alpine AS runner
 
+# Set production environment
+ENV NODE_ENV=production
+
 WORKDIR /app
+
+# Create a non-root user for security
+RUN addgroup -S nodeapp && adduser -S nodeapp -G nodeapp
 
 # Copy built files from the builder stage
 COPY --from=builder /app/dist ./dist
@@ -31,6 +37,9 @@ ENV METEOCONTROL_API_KEY=""
 ENV METEOCONTROL_USER=""
 ENV METEOCONTROL_PASSWORD=""
 ENV METEOCONTROL_API_BASE_URL="https://api.meteocontrol.de/v2"
+
+# Use the non-root user
+USER nodeapp
 
 # Run the server
 CMD ["node", "dist/index.js"]

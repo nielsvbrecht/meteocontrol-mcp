@@ -1,16 +1,61 @@
-name: release
+name: pipeline
 
 on:
   push:
+    branches: [ main ]
     tags:
       - 'v*'
+  pull_request:
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push-image:
+  test:
+    name: Test and Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run lint and build
+        run: |
+          npm run lint
+          npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Dependency Security Audit
+        run: npm audit --audit-level=high
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  release:
+    name: Build and Release Docker Image
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
