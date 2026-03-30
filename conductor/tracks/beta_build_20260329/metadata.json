@@ -1,0 +1,8 @@
+{
+  "track_id": "beta_build_20260329",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-29T16:00:00Z",
+  "updated_at": "2026-03-29T16:00:00Z",
+  "description": "I want to update the pipeline that also testing and building is done for feature branches and not just main. I do want to add -beta to the ending of the docker image tag to indicate the code came from a feature branch."
+}
