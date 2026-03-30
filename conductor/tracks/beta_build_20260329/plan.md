@@ -13,9 +13,9 @@
 - [x] Task: Configure Docker Tagging for Beta (b59e396)
   - [x] Update the `metadata-action` step in `main.yml` to support branch-based tagging with `-beta` suffix.
   - [x] Ensure the existing `v*` tag logic for main releases remains unaffected.
-- [ ] Task: Enable GHCR Push for Beta Images
-  - [ ] Update the `build-and-push-action` to push images for feature branches.
-  - [ ] Verify that the `permissions` for `packages: write` are correctly set for all jobs.
+- [x] Task: Enable GHCR Push for Beta Images (b59e396)
+  - [x] Update the `build-and-push-action` to push images for feature branches.
+  - [x] Verify that the `permissions` for `packages: write` are correctly set for all jobs.
 - [ ] Task: Conductor - User Manual Verification 'Docker tagging and Registry Push' (Protocol in workflow.md)
 
 ## Phase 3: Verification and Documentation
