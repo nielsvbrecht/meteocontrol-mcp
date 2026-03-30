@@ -1,13 +1,13 @@
 # Implementation Plan: Feature Branch Testing and Beta Building
 
-## Phase 1: Pipeline Configuration Update
+## Phase 1: Pipeline Configuration Update [checkpoint: 4d1cbfa]
 - [x] Task: Update Workflow Triggers (2d8adeb)
   - [x] Modify `.github/workflows/main.yml` to include all branches in the `push` event.
   - [x] Verify the trigger logic with a local dry-run if possible.
 - [x] Task: Implement Conditional Beta Logic (d64fef1)
   - [x] Add logic to the `test` job to set an output variable indicating if the branch is `main` or a feature branch.
   - [x] Update the `release` job to also trigger on feature branches, but with a different naming convention.
-- [~] Task: Conductor - User Manual Verification 'Pipeline Configuration Update' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Pipeline Configuration Update' (Protocol in workflow.md) (4d1cbfa)
 
 ## Phase 2: Docker Tagging and Registry Push
 - [ ] Task: Configure Docker Tagging for Beta
