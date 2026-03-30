@@ -22,6 +22,6 @@
 - [x] Task: End-to-End Pipeline Testing (0a5aad2)
   - [x] Push a change to a new feature branch and verify the "beta" build triggers and pushes to GHCR.
   - [x] Push a change to `main` (or a test release tag) and verify the standard release logic still works.
-- [ ] Task: Update README with Beta Instructions
-  - [ ] Add a section to `README.md` explaining how to find and use beta images from feature branches.
+- [x] Task: Update README with Beta Instructions (89d031f)
+  - [x] Add a section to `README.md` explaining how to find and use beta images from feature branches.
 - [ ] Task: Conductor - User Manual Verification 'Verification and Documentation' (Protocol in workflow.md)
