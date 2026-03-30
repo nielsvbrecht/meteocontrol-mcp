@@ -19,9 +19,9 @@
 - [x] Task: Conductor - User Manual Verification 'Docker tagging and Registry Push' (Protocol in workflow.md) (0964e10)
 
 ## Phase 3: Verification and Documentation
-- [ ] Task: End-to-End Pipeline Testing
-  - [ ] Push a change to a new feature branch and verify the "beta" build triggers and pushes to GHCR.
-  - [ ] Push a change to `main` (or a test release tag) and verify the standard release logic still works.
+- [x] Task: End-to-End Pipeline Testing (0a5aad2)
+  - [x] Push a change to a new feature branch and verify the "beta" build triggers and pushes to GHCR.
+  - [x] Push a change to `main` (or a test release tag) and verify the standard release logic still works.
 - [ ] Task: Update README with Beta Instructions
   - [ ] Add a section to `README.md` explaining how to find and use beta images from feature branches.
 - [ ] Task: Conductor - User Manual Verification 'Verification and Documentation' (Protocol in workflow.md)
