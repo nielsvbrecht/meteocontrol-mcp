@@ -7,7 +7,7 @@ coverage
 .prettierrc
 eslint.config.js
 jest.config.js
-tsconfig.json
+# tsconfig.json - removed from ignore to allow build
 src/**/*.test.ts
 src/docker.test.ts
 src/integration.test.ts

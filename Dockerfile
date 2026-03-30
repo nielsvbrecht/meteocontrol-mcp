@@ -32,10 +32,7 @@ COPY --from=builder /app/package*.json ./
 # Install only production dependencies
 RUN npm install --omit=dev
 
-# Set environment variables (placeholders, should be provided at runtime)
-ENV METEOCONTROL_API_KEY=""
-ENV METEOCONTROL_USER=""
-ENV METEOCONTROL_PASSWORD=""
+# Set base URL (non-sensitive)
 ENV METEOCONTROL_API_BASE_URL="https://api.meteocontrol.de/v2"
 
 # Use the non-root user
