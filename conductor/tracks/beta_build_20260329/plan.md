@@ -10,9 +10,9 @@
 - [x] Task: Conductor - User Manual Verification 'Pipeline Configuration Update' (Protocol in workflow.md) (4d1cbfa)
 
 ## Phase 2: Docker Tagging and Registry Push
-- [ ] Task: Configure Docker Tagging for Beta
-  - [ ] Update the `metadata-action` step in `main.yml` to support branch-based tagging with `-beta` suffix.
-  - [ ] Ensure the existing `v*` tag logic for main releases remains unaffected.
+- [x] Task: Configure Docker Tagging for Beta (b59e396)
+  - [x] Update the `metadata-action` step in `main.yml` to support branch-based tagging with `-beta` suffix.
+  - [x] Ensure the existing `v*` tag logic for main releases remains unaffected.
 - [ ] Task: Enable GHCR Push for Beta Images
   - [ ] Update the `build-and-push-action` to push images for feature branches.
   - [ ] Verify that the `permissions` for `packages: write` are correctly set for all jobs.
