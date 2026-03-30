@@ -7,7 +7,7 @@
 - [x] Task: Implement Conditional Beta Logic (d64fef1)
   - [x] Add logic to the `test` job to set an output variable indicating if the branch is `main` or a feature branch.
   - [x] Update the `release` job to also trigger on feature branches, but with a different naming convention.
-- [ ] Task: Conductor - User Manual Verification 'Pipeline Configuration Update' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Pipeline Configuration Update' (Protocol in workflow.md)
 
 ## Phase 2: Docker Tagging and Registry Push
 - [ ] Task: Configure Docker Tagging for Beta
