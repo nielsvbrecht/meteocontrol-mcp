@@ -5,16 +5,17 @@
   - [x] Use `gh repo create` to create a public/private repository.
   - [x] Push the current `main` branch to GitHub.
 - [x] Task: Implement Test Pipeline (75de7d3)
-  - [x] Create `.github/workflows/test.yml`.
+  - [x] Create `.github/workflows/test.yml`. (Note: Consolidated into main.yml)
   - [x] Define jobs for Node.js setup, dependency installation, linting, and testing.
 - [x] Task: Conductor - User Manual Verification 'Repository Setup and CI' (Protocol in workflow.md) (5cf6280)
 
-## Phase 2: Docker Release Pipeline
+## Phase 2: Docker Release Pipeline [checkpoint: 7563403]
 - [x] Task: Implement Release Pipeline (54d649d)
-  - [x] Create `.github/workflows/release.yml`.
+  - [x] Create `.github/workflows/release.yml`. (Note: Consolidated into main.yml)
   - [x] Define jobs for Docker build and push to GHCR on release tags.
-- [x] Task: Final Verification (54d649d)
+- [x] Task: Final Verification (7563403)
   - [x] Push a test tag to trigger the release pipeline.
   - [x] Verify the image appears in GHCR.
-- [~] Task: Conductor - User Manual Verification 'Docker Release Pipeline' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Docker Release Pipeline' (Protocol in workflow.md) (7563403)
+
 
