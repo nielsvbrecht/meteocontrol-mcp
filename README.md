@@ -74,6 +74,15 @@ npm start
      meteocontrol-mcp
    ```
 
+### Beta Builds (Feature Branches)
+
+Images built from non-main branches (e.g., `feature/*`, `fix/*`) are automatically pushed to the GitHub Container Registry (GHCR) with a `-beta` suffix. This allows for testing new features in a containerized environment before they are merged.
+
+Example pull command:
+```bash
+docker pull ghcr.io/<your-github-username>/meteocontrol-mcp:<branch-name>-beta
+```
+
 ### Integration with Claude Desktop
 
 Add the following configuration to your `claude_desktop_config.json`:
