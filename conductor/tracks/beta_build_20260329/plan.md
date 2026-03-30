@@ -9,14 +9,14 @@
   - [x] Update the `release` job to also trigger on feature branches, but with a different naming convention.
 - [x] Task: Conductor - User Manual Verification 'Pipeline Configuration Update' (Protocol in workflow.md) (4d1cbfa)
 
-## Phase 2: Docker Tagging and Registry Push
+## Phase 2: Docker Tagging and Registry Push [checkpoint: 0964e10]
 - [x] Task: Configure Docker Tagging for Beta (b59e396)
   - [x] Update the `metadata-action` step in `main.yml` to support branch-based tagging with `-beta` suffix.
   - [x] Ensure the existing `v*` tag logic for main releases remains unaffected.
 - [x] Task: Enable GHCR Push for Beta Images (b59e396)
   - [x] Update the `build-and-push-action` to push images for feature branches.
   - [x] Verify that the `permissions` for `packages: write` are correctly set for all jobs.
-- [~] Task: Conductor - User Manual Verification 'Docker tagging and Registry Push' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Docker tagging and Registry Push' (Protocol in workflow.md) (0964e10)
 
 ## Phase 3: Verification and Documentation
 - [ ] Task: End-to-End Pipeline Testing
