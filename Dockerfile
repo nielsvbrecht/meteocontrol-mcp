@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -15,10 +15,11 @@ COPY src ./src
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 # Set production environment
 ENV NODE_ENV=production
+ENV PORT=3000
 
 WORKDIR /app
 
@@ -34,6 +35,9 @@ RUN npm install --omit=dev
 
 # Set base URL (non-sensitive)
 ENV METEOCONTROL_API_BASE_URL="https://api.meteocontrol.de/v2"
+
+# Expose port for SSE mode
+EXPOSE 3000
 
 # Use the non-root user
 USER nodeapp
