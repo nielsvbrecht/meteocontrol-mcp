@@ -1,6 +1,6 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema, ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+import { z } from 'zod';
 import { MeteoControlApi } from './api.js';
 import dotenv from 'dotenv';
 
@@ -11,23 +11,16 @@ dotenv.config();
  * Provides access to solar installation data via the VCOM API v2.
  */
 export class MeteoControlServer {
-  private server: Server;
+  private server: McpServer;
   private api: MeteoControlApi;
   public readonly name = 'meteocontrol-mcp';
   public readonly version = '1.0.0';
 
   constructor() {
-    this.server = new Server(
-      {
-        name: this.name,
-        version: this.version,
-      },
-      {
-        capabilities: {
-          tools: {},
-        },
-      },
-    );
+    this.server = new McpServer({
+      name: this.name,
+      version: this.version,
+    });
 
     const apiKey = process.env['METEOCONTROL_API_KEY'] || '';
     const user = process.env['METEOCONTROL_USER'] || '';
@@ -44,176 +37,114 @@ export class MeteoControlServer {
       baseUrl: process.env['METEOCONTROL_API_BASE_URL'] || 'https://api.meteocontrol.de/v2',
     });
 
-    this.setupHandlers();
+    this.registerTools();
   }
 
-  private setupHandlers() {
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: [
-        {
-          name: 'get_energy_data',
-          description: 'Retrieve real-time and historical energy and power metrics for a specific solar installation.',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              systemKey: {
-                type: 'string',
-                description: 'The unique key/ID of the solar system (e.g., from VCOM dashboard).',
-              },
-              from: {
-                type: 'string',
-                description:
-                  'The start date and time for the data request (ISO 8601 format, e.g., 2024-01-01T00:00:00Z).',
-              },
-              to: {
-                type: 'string',
-                description:
-                  'The end date and time for the data request (ISO 8601 format, e.g., 2024-01-02T00:00:00Z).',
-              },
-            },
-            required: ['systemKey', 'from', 'to'],
-          },
-        },
-        {
-          name: 'get_alerts',
-          description: 'Fetch active system alerts and historical event logs for a connected solar installation.',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              systemKey: {
-                type: 'string',
-                description: 'The unique key/ID of the solar system.',
-              },
-            },
-            required: ['systemKey'],
-          },
-        },
-        {
-          name: 'get_asset_info',
-          description:
-            'Get comprehensive configuration details and metadata for solar assets, including panels and inverters.',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              systemKey: {
-                type: 'string',
-                description: 'The unique key/ID of the solar system.',
-              },
-            },
-            required: ['systemKey'],
-          },
-        },
-      ],
-    }));
-
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
-
+  private registerTools() {
+    // Tool - System Discovery
+    this.server.tool('list_systems', {}, async () => {
       try {
-        switch (name) {
-          case 'get_energy_data':
-            return await this.handleGetEnergyData(args as Record<string, unknown>);
-          case 'get_alerts':
-            return await this.handleGetAlerts(args as Record<string, unknown>);
-          case 'get_asset_info':
-            return await this.handleGetAssetInfo(args as Record<string, unknown>);
-          default:
-            throw new McpError(ErrorCode.MethodNotFound, `Tool not found: ${name}`);
-        }
+        const data = await this.api.get('/systems');
+        return {
+          content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+        };
       } catch (error: unknown) {
-        console.error(`Error executing tool ${name}:`, error);
-        throw error;
+        return {
+          content: [
+            { type: 'text', text: `Error listing systems: ${error instanceof Error ? error.message : String(error)}` },
+          ],
+          isError: true,
+        };
       }
     });
+
+    // Tool - Energy Monitoring
+    this.server.tool(
+      'get_energy_data',
+      {
+        systemKey: z.string().describe('The unique key/ID of the solar system.'),
+        from: z.string().describe('The start date and time (ISO 8601).'),
+        to: z.string().describe('The end date and time (ISO 8601).'),
+      },
+      async ({ systemKey, from, to }) => {
+        try {
+          // Defaulting to E_Z_EVU as the primary yield abbreviation
+          const data = await this.api.get(`/systems/${systemKey}/basics/abbreviations/E_Z_EVU/measurements`, {
+            from,
+            to,
+          });
+          return {
+            content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+          };
+        } catch (error: unknown) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error fetching energy data: ${error instanceof Error ? error.message : String(error)}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+      },
+    );
+
+    // Tool - Alert Retrieval
+    this.server.tool(
+      'get_alerts',
+      {
+        systemKey: z.string().describe('The unique key/ID of the solar system.'),
+      },
+      async ({ systemKey }) => {
+        try {
+          const data = await this.api.get(`/systems/${systemKey}/alarms`);
+          return {
+            content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+          };
+        } catch (error: unknown) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error fetching alerts: ${error instanceof Error ? error.message : String(error)}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+      },
+    );
+
+    // Tool - Asset Information
+    this.server.tool(
+      'get_asset_info',
+      {
+        systemKey: z.string().describe('The unique key/ID of the solar system.'),
+      },
+      async ({ systemKey }) => {
+        try {
+          const data = await this.api.get(`/systems/${systemKey}`);
+          return {
+            content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+          };
+        } catch (error: unknown) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error fetching asset info: ${error instanceof Error ? error.message : String(error)}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+      },
+    );
   }
 
-  private async handleGetEnergyData(args: Record<string, unknown>) {
-    try {
-      const { systemKey, from, to } = args;
-      const data = await this.api.get(`/systems/${systemKey}/metrics/energy`, {
-        from,
-        to,
-      } as Record<string, unknown>);
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(data, null, 2),
-          },
-        ],
-      };
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Error fetching energy data: ${errorMessage}`,
-          },
-        ],
-        isError: true,
-      };
-    }
-  }
-
-  private async handleGetAlerts(args: Record<string, unknown>) {
-    try {
-      const { systemKey } = args;
-      const data = await this.api.get(`/systems/${systemKey}/alerts`, {});
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(data, null, 2),
-          },
-        ],
-      };
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Error fetching alerts: ${errorMessage}`,
-          },
-        ],
-        isError: true,
-      };
-    }
-  }
-
-  private async handleGetAssetInfo(args: Record<string, unknown>) {
-    try {
-      const { systemKey } = args;
-      const data = await this.api.get(`/systems/${systemKey}`, {});
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(data, null, 2),
-          },
-        ],
-      };
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Error fetching asset info: ${errorMessage}`,
-          },
-        ],
-        isError: true,
-      };
-    }
-  }
-
-  async run() {
-    const transport = new StdioServerTransport();
+  async run(transport: Transport) {
     await this.server.connect(transport);
-    console.error(`MeteoControl MCP server v${this.version} running on stdio`);
+    console.error(`MeteoControl MCP server v${this.version} running`);
   }
 }

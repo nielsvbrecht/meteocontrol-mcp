@@ -1,136 +1,88 @@
 # MeteoControl MCP Server
 
-A Model Context Protocol (MCP) server that provides seamless interaction with the MeteoControl VCOM API v2. This server allows users to ask natural language questions about their solar array installations through MCP-enabled clients (like Claude Desktop).
+A Model Context Protocol (MCP) server for the MeteoControl VCOM API v2. This extension allows you to monitor solar arrays, retrieve energy production data, and perform system health checks using natural language via the Gemini CLI.
 
 ## Features
 
-- **Energy Monitoring (`get_energy_data`):** Retrieve real-time and historical energy and power metrics.
-- **Alert Retrieval (`get_alerts`):** Fetch active system alerts and historical event logs.
-- **Asset Information (`get_asset_info`):** Get detailed configuration and metadata for solar assets (panels, inverters, sensors).
-
-## Prerequisites
-
-- Node.js 18 or higher (for local development).
-- Docker (for containerized deployment).
-- A MeteoControl VCOM API v2 account with:
-  - **API Key**
-  - **Username (E-mail address)**
-  - **Password**
+- **System Discovery:** List all solar systems associated with your account.
+- **Energy Monitoring:** Retrieve historical energy production data (Wh/kWh/MWh).
+- **Asset Information:** Get technical details about panels, inverters, and site capacity.
+- **Real-time Power:** Check instantaneous AC power output.
+- **Multi-Transport Support:** Run locally via Stdio or host remotely via SSE.
 
 ## Installation
 
-### Local Development
+### Via Gemini CLI (Recommended)
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/meteocontrol-mcp.git
-   cd meteocontrol-mcp
-   ```
+To install the extension directly from GitHub:
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Build the project:
-   ```bash
-   npm run build
-   ```
-
-## Configuration
-
-Create a `.env` file in the project root and add your MeteoControl API credentials:
-
-```env
-METEOCONTROL_API_KEY=your_api_key_here
-METEOCONTROL_USER=your_email_address_here
-METEOCONTROL_PASSWORD=your_password_here
-METEOCONTROL_API_BASE_URL=https://api.meteocontrol.de/v2
+```bash
+gemini extensions add https://github.com/your-org/meteocontrol-mcp
 ```
+
+### Manual Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/your-org/meteocontrol-mcp.git
+    cd meteocontrol-mcp
+    ```
+2.  Install dependencies and build:
+    ```bash
+    npm install
+    npm run build
+    ```
 
 ## Usage
 
-### Running Locally
+Once installed, you can ask Gemini about your solar systems:
 
-To start the MCP server on `stdio`:
+- "List my solar systems."
+- "What is the energy production for system NCLLA for the last 24 hours?"
+- "Show me the technical details for INV1 in system NCLLA."
 
-```bash
-npm start
-```
+### Pre-configured Commands
 
-### Running with Docker
+- `/health [systemKey]`: Perform a comprehensive site health check.
+- `/yield [systemKey]`: Retrieve and summarize energy production data.
 
-1. **Build the Docker image:**
-   ```bash
-   docker build -t meteocontrol-mcp .
-   ```
+## Deployment & Hosting
 
-2. **Run the container:**
-   ```bash
-   docker run --rm -it \
-     -e METEOCONTROL_API_KEY=your_api_key \
-     -e METEOCONTROL_USER=your_email \
-     -e METEOCONTROL_PASSWORD=your_password \
-     meteocontrol-mcp
-   ```
+The server supports two modes of operation:
 
-### Beta Builds (Feature Branches)
+### 1. Local Mode (Stdio)
+This is the default mode used by the Gemini CLI.
+- **Command:** `node dist/index.js`
+- **Setup:** Defined in `gemini-extension.json` using `command` and `args`.
 
-Images built from non-main branches (e.g., `feature/*`, `fix/*`) are automatically pushed to the GitHub Container Registry (GHCR) with a `-beta` suffix. This allows for testing new features in a containerized environment before they are merged.
-
-Example pull command:
-```bash
-docker pull ghcr.io/<your-github-username>/meteocontrol-mcp:<branch-name>-beta
-```
-
-### Integration with Claude Desktop
-
-Add the following configuration to your `claude_desktop_config.json`:
-
-#### Local Node.js
-```json
-{
-  "mcpServers": {
-    "meteocontrol": {
-      "command": "node",
-      "args": ["/path/to/meteocontrol-mcp/dist/index.js"],
-      "env": {
-        "METEOCONTROL_API_KEY": "your_api_key_here",
-        "METEOCONTROL_USER": "your_email_address_here",
-        "METEOCONTROL_PASSWORD": "your_password_here"
+### 2. Remote Mode (SSE)
+Use this mode to host the MCP server on a central server for multiple users.
+- **Environment Variables:**
+  - `MCP_TRANSPORT=sse`
+  - `PORT=3000` (optional, defaults to 3000)
+- **Run Command:**
+  ```bash
+  MCP_TRANSPORT=sse node dist/index.js
+  ```
+- **Configuration:** In `.gemini/settings.json`, use the `url` property:
+  ```json
+  {
+    "mcpServers": {
+      "meteocontrol": {
+        "url": "https://your-mcp-server.com/sse"
       }
     }
   }
-}
-```
+  ```
 
-#### Docker
-```json
-{
-  "mcpServers": {
-    "meteocontrol-docker": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e", "METEOCONTROL_API_KEY=your_api_key_here",
-        "-e", "METEOCONTROL_USER=your_email_address_here",
-        "-e", "METEOCONTROL_PASSWORD=your_password_here",
-        "meteocontrol-mcp"
-      ]
-    }
-  }
-}
-```
+## Configuration
 
-## Development
+The following environment variables are required for the server to talk to MeteoControl:
 
-- **Run tests:** `npm test`
-- **Lint code:** `npm run lint`
-- **Format code:** `npm run format`
-- **Full check:** `npm run check`
+- `METEOCONTROL_API_KEY`: Your VCOM API key.
+- `METEOCONTROL_USER`: Your VCOM username (email).
+- `METEOCONTROL_PASSWORD`: Your VCOM password.
 
 ## License
 
-This project is licensed under the ISC License.
+Apache License 2.0

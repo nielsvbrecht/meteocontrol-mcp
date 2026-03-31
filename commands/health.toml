@@ -1,0 +1,9 @@
+description = "Perform a comprehensive site health check for a solar system."
+prompt = """
+Perform a comprehensive health check for the solar system with key {{args}}.
+Follow these steps:
+1. Get asset information using `get_asset_info` to understand the system capacity and hardware.
+2. Retrieve the last 24 hours of energy production data using `get_energy_data`.
+3. Fetch all active alerts using `get_alerts`.
+4. Summarize the overall site health, highlighting any production gaps or critical alerts.
+"""

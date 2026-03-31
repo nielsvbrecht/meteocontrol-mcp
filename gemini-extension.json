@@ -1,0 +1,33 @@
+{
+  "name": "meteocontrol",
+  "version": "1.0.0",
+  "description": "Seamlessly interact with your solar arrays via the MeteoControl VCOM API v2.",
+  "contextFileName": "GEMINI.md",
+  "settings": [
+    {
+      "name": "MeteoControl API Key",
+      "description": "Your MeteoControl VCOM API v2 Key",
+      "envVar": "METEOCONTROL_API_KEY",
+      "sensitive": true
+    },
+    {
+      "name": "MeteoControl Username",
+      "description": "Your MeteoControl Username (Email address)",
+      "envVar": "METEOCONTROL_USER",
+      "sensitive": false
+    },
+    {
+      "name": "MeteoControl Password",
+      "description": "Your MeteoControl Password",
+      "envVar": "METEOCONTROL_PASSWORD",
+      "sensitive": true
+    }
+  ],
+  "mcpServers": {
+    "meteocontrol": {
+      "command": "node",
+      "args": ["${extensionPath}${/}dist${/}index.js"],
+      "cwd": "${extensionPath}"
+    }
+  }
+}
