@@ -21,3 +21,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [~] **Track: Feature Branch Testing and Beta Building**
   *Link: [./tracks/beta_build_20260329/](./tracks/beta_build_20260329/)*
+
+---
+
+- [x] **Track: Gemini CLI Extension Integration**
+  *Link: [./gemini-extension-integration-plan.md](./gemini-extension-integration-plan.md)*

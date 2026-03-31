@@ -24,4 +24,4 @@
   - [x] Push a change to `main` (or a test release tag) and verify the standard release logic still works.
 - [x] Task: Update README with Beta Instructions (89d031f)
   - [x] Add a section to `README.md` explaining how to find and use beta images from feature branches.
-- [ ] Task: Conductor - User Manual Verification 'Verification and Documentation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Verification and Documentation' (Protocol in workflow.md)

@@ -1,0 +1,6 @@
+description = "Retrieve energy production data for a specific solar system."
+prompt = """
+Please retrieve the energy production data for the solar system with key {{args}}.
+Use the `get_energy_data` tool. If the user didn't specify a time range, default to the last 24 hours.
+Summarize the results by converting raw Wh to kWh or MWh as appropriate and calculating the Specific Yield if the capacity is known.
+"""

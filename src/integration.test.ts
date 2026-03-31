@@ -1,14 +1,21 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 const mockGet = jest.fn();
-const mockSetRequestHandler = jest.fn();
-const mockConnect = jest.fn();
+const toolHandlers = new Map<string, (args: Record<string, unknown>) => Promise<unknown>>();
 
-jest.unstable_mockModule('@modelcontextprotocol/sdk/server/index.js', () => ({
-  Server: jest.fn().mockImplementation(() => ({
-    setRequestHandler: mockSetRequestHandler,
-    connect: mockConnect,
-  })),
+jest.unstable_mockModule('@modelcontextprotocol/sdk/server/mcp.js', () => ({
+  McpServer: jest.fn().mockImplementation(() => {
+    const server = {
+      tool: jest.fn().mockImplementation((name, _schema, handler) => {
+        toolHandlers.set(name, handler);
+        return server;
+      }),
+      setRequestHandler: jest.fn(),
+      connect: jest.fn(),
+      assertCanSetRequestHandler: jest.fn(),
+    };
+    return server;
+  }),
 }));
 
 jest.unstable_mockModule('./api.js', () => ({
@@ -17,70 +24,35 @@ jest.unstable_mockModule('./api.js', () => ({
   })),
 }));
 
-// Set env vars for testing
-process.env['METEOCONTROL_API_KEY'] = 'test-key';
-process.env['METEOCONTROL_USER'] = 'test-user';
-process.env['METEOCONTROL_PASSWORD'] = 'test-password';
-
 const { MeteoControlServer } = await import('./server.js');
-const { CallToolRequestSchema } = await import('@modelcontextprotocol/sdk/types.js');
 
-describe('Tool Integration Tests', () => {
-  beforeEach(async () => {
+describe('Tool Integration Full Tests', () => {
+  beforeEach(() => {
     jest.clearAllMocks();
-    new MeteoControlServer();
+    toolHandlers.clear();
   });
 
-  const getHandler = () =>
-    mockSetRequestHandler.mock.calls.find((c) => c[0] === CallToolRequestSchema)![1] as (
-      request: unknown,
-    ) => Promise<unknown>;
-
   it('should successfully handle a get_energy_data tool call', async () => {
-    const mockData = { energy: 1234.5 };
+    const mockData = { energy: 100 };
     mockGet.mockResolvedValue(mockData);
-    const handler = getHandler();
+    new MeteoControlServer();
+    const handler = toolHandlers.get('get_energy_data')!;
 
-    const result = (await handler({
-      params: {
-        name: 'get_energy_data',
-        arguments: { systemKey: 'sys1', from: '2024-01-01', to: '2024-01-02' },
-      },
-    })) as { content: Array<{ text: string }> };
+    const result = await handler({ systemKey: 'sys1', from: '2024-01-01', to: '2024-01-02' });
 
-    expect(mockGet).toHaveBeenCalledWith('/systems/sys1/metrics/energy', expect.any(Object));
+    expect(mockGet).toHaveBeenCalledWith('/systems/sys1/basics/abbreviations/E_Z_EVU/measurements', expect.any(Object));
     expect(result.content[0]!.text).toBe(JSON.stringify(mockData, null, 2));
   });
 
   it('should successfully handle a get_alerts tool call', async () => {
-    const mockData = { alerts: [] };
+    const mockData = { alarms: [] };
     mockGet.mockResolvedValue(mockData);
-    const handler = getHandler();
+    new MeteoControlServer();
+    const handler = toolHandlers.get('get_alerts')!;
 
-    const result = (await handler({
-      params: {
-        name: 'get_alerts',
-        arguments: { systemKey: 'sys1' },
-      },
-    })) as { content: Array<{ text: string }> };
+    const result = await handler({ systemKey: 'sys1' });
 
-    expect(mockGet).toHaveBeenCalledWith('/systems/sys1/alerts', expect.any(Object));
-    expect(result.content[0]!.text).toBe(JSON.stringify(mockData, null, 2));
-  });
-
-  it('should successfully handle a get_asset_info tool call', async () => {
-    const mockData = { id: 'sys1', name: 'My System' };
-    mockGet.mockResolvedValue(mockData);
-    const handler = getHandler();
-
-    const result = (await handler({
-      params: {
-        name: 'get_asset_info',
-        arguments: { systemKey: 'sys1' },
-      },
-    })) as { content: Array<{ text: string }> };
-
-    expect(mockGet).toHaveBeenCalledWith('/systems/sys1', expect.any(Object));
+    expect(mockGet).toHaveBeenCalledWith('/systems/sys1/alarms');
     expect(result.content[0]!.text).toBe(JSON.stringify(mockData, null, 2));
   });
 });

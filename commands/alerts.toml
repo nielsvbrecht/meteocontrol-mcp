@@ -1,0 +1,6 @@
+description = "Fetch active alerts and events for a solar system."
+prompt = """
+Retrieve and summarize all active alerts and system events for the solar system with key {{args}}.
+Use the `get_alerts` tool.
+Identify any critical hardware failures (e.g., inverters offline, communication loss) and provide actionable guidance.
+"""
