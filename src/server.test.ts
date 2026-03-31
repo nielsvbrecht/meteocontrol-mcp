@@ -3,7 +3,7 @@ import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 
 const mockConnect = jest.fn();
 const mockSetRequestHandler = jest.fn();
-const toolHandlers = new Map<string, (args: Record<string, unknown>) => Promise<any>>();
+const toolHandlers = new Map<string, (args: Record<string, unknown>) => Promise<unknown>>();
 
 jest.unstable_mockModule('@modelcontextprotocol/sdk/server/mcp.js', () => ({
   McpServer: jest.fn().mockImplementation(() => {
@@ -39,11 +39,11 @@ describe('MeteoControlServer Full Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     toolHandlers.clear();
-    process.env = { 
+    process.env = {
       ...originalEnv,
       METEOCONTROL_API_KEY: 'k',
       METEOCONTROL_USER: 'u',
-      METEOCONTROL_PASSWORD: 'p'
+      METEOCONTROL_PASSWORD: 'p',
     };
   });
 
