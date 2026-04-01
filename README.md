@@ -39,8 +39,8 @@ gemini extensions add https://github.com/your-org/meteocontrol-mcp
 Once installed, you can ask Gemini about your solar systems:
 
 - "List my solar systems."
-- "What is the energy production for system NCLLA for the last 24 hours?"
-- "Show me the technical details for INV1 in system NCLLA."
+- "What is the energy production for system [systemKey] for the last 24 hours?"
+- "Show me the technical details for INV1 in system [systemKey]."
 
 ### Multi-Tenant Usage (BYOC)
 If you are using a shared MCP server, you can provide your own credentials directly in your prompts or configure them locally. The tools accept optional `apiKey`, `user`, and `password` arguments.
