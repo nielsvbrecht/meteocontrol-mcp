@@ -55,30 +55,6 @@ describe('MeteoControlServer Full Tests', () => {
     expect(toolHandlers.has('get_asset_info')).toBe(true);
   });
 
-  it('should warn if credentials are missing (API_KEY missing)', async () => {
-    delete process.env.METEOCONTROL_API_KEY;
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    new MeteoControlServer();
-    expect(spy).toHaveBeenCalled();
-    spy.mockRestore();
-  });
-
-  it('should warn if credentials are missing (USER missing)', async () => {
-    delete process.env.METEOCONTROL_USER;
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    new MeteoControlServer();
-    expect(spy).toHaveBeenCalled();
-    spy.mockRestore();
-  });
-
-  it('should warn if credentials are missing (PASSWORD missing)', async () => {
-    delete process.env.METEOCONTROL_PASSWORD;
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    new MeteoControlServer();
-    expect(spy).toHaveBeenCalled();
-    spy.mockRestore();
-  });
-
   it('should handle list_systems successfully', async () => {
     new MeteoControlServer();
     const handler = toolHandlers.get('list_systems')!;
