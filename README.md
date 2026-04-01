@@ -52,7 +52,7 @@ If you are using a shared MCP server, you can provide your own credentials direc
 
 ## Deployment & Hosting
 
-The server supports two modes of operation:
+The server supports multiple modes of operation:
 
 ### 1. Local Mode (Stdio)
 This is the default mode used by the Gemini CLI.
@@ -78,7 +78,31 @@ openssl rand -base64 32
   MCP_TRANSPORT=sse MCP_SERVER_TOKEN=your_token node dist/index.js
   ```
 
-#### Client Configuration
+### 3. Docker Mode
+You can run the server as a container for easy deployment.
+
+#### For Stdio Mode (CLI use):
+```bash
+docker run -i --rm \
+  -e METEOCONTROL_API_KEY=your_key \
+  -e METEOCONTROL_USER=your_user \
+  -e METEOCONTROL_PASSWORD=your_password \
+  ghcr.io/your-org/meteocontrol-mcp:latest
+```
+
+#### For SSE Mode (Hosted use):
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e MCP_TRANSPORT=sse \
+  -e MCP_SERVER_TOKEN=your_token \
+  -e METEOCONTROL_API_KEY=your_key \
+  -e METEOCONTROL_USER=your_user \
+  -e METEOCONTROL_PASSWORD=your_password \
+  ghcr.io/your-org/meteocontrol-mcp:latest
+```
+
+#### Client Configuration (for SSE)
 In your local `.gemini/settings.json`, add the `url` and the `Authorization` header:
 ```json
 {
