@@ -9,6 +9,7 @@ A Model Context Protocol (MCP) server for the MeteoControl VCOM API v2. This ext
 - **Asset Information:** Get technical details about panels, inverters, and site capacity.
 - **Real-time Power:** Check instantaneous AC power output.
 - **Multi-Transport Support:** Run locally via Stdio or host remotely via SSE.
+- **Multi-Tenant (BYOC):** Support for "Bring Your Own Credentials" in a shared environment.
 
 ## Installation
 
@@ -38,8 +39,11 @@ gemini extensions add https://github.com/your-org/meteocontrol-mcp
 Once installed, you can ask Gemini about your solar systems:
 
 - "List my solar systems."
-- "What is the energy production for system NCLLA for the last 24 hours?"
-- "Show me the technical details for INV1 in system NCLLA."
+- "What is the energy production for system [systemKey] for the last 24 hours?"
+- "Show me the technical details for INV1 in system [systemKey]."
+
+### Multi-Tenant Usage (BYOC)
+If you are using a shared MCP server, you can provide your own credentials directly in your prompts or configure them locally. The tools accept optional `apiKey`, `user`, and `password` arguments.
 
 ### Pre-configured Commands
 
@@ -48,7 +52,7 @@ Once installed, you can ask Gemini about your solar systems:
 
 ## Deployment & Hosting
 
-The server supports two modes of operation:
+The server supports multiple modes of operation:
 
 ### 1. Local Mode (Stdio)
 This is the default mode used by the Gemini CLI.
@@ -57,27 +61,65 @@ This is the default mode used by the Gemini CLI.
 
 ### 2. Remote Mode (SSE)
 Use this mode to host the MCP server on a central server for multiple users.
+
+#### Security: Generating an Access Token
+Remote mode requires a mandatory `MCP_SERVER_TOKEN` for security. You can generate a secure token using:
+```bash
+openssl rand -base64 32
+```
+
+#### Server Configuration
 - **Environment Variables:**
   - `MCP_TRANSPORT=sse`
+  - `MCP_SERVER_TOKEN=your_generated_token` (Required)
   - `PORT=3000` (optional, defaults to 3000)
 - **Run Command:**
   ```bash
-  MCP_TRANSPORT=sse node dist/index.js
+  MCP_TRANSPORT=sse MCP_SERVER_TOKEN=your_token node dist/index.js
   ```
-- **Configuration:** In `.gemini/settings.json`, use the `url` property:
-  ```json
-  {
-    "mcpServers": {
-      "meteocontrol": {
-        "url": "https://your-mcp-server.com/sse"
+
+### 3. Docker Mode
+You can run the server as a container for easy deployment.
+
+#### For Stdio Mode (CLI use):
+```bash
+docker run -i --rm \
+  -e METEOCONTROL_API_KEY=your_key \
+  -e METEOCONTROL_USER=your_user \
+  -e METEOCONTROL_PASSWORD=your_password \
+  ghcr.io/your-org/meteocontrol-mcp:latest
+```
+
+#### For SSE Mode (Hosted use):
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e MCP_TRANSPORT=sse \
+  -e MCP_SERVER_TOKEN=your_token \
+  -e METEOCONTROL_API_KEY=your_key \
+  -e METEOCONTROL_USER=your_user \
+  -e METEOCONTROL_PASSWORD=your_password \
+  ghcr.io/your-org/meteocontrol-mcp:latest
+```
+
+#### Client Configuration (for SSE)
+In your local `.gemini/settings.json`, add the `url` and the `Authorization` header:
+```json
+{
+  "mcpServers": {
+    "meteocontrol": {
+      "url": "https://your-mcp-server.com/sse",
+      "headers": {
+        "Authorization": "Bearer your_generated_token"
       }
     }
   }
-  ```
+}
+```
 
 ## Configuration
 
-The following environment variables are required for the server to talk to MeteoControl:
+The following environment variables are required for the server to talk to MeteoControl (unless credentials are provided per request):
 
 - `METEOCONTROL_API_KEY`: Your VCOM API key.
 - `METEOCONTROL_USER`: Your VCOM username (email).

@@ -6,13 +6,20 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Common schema for authentication arguments
+const AuthSchema = {
+  apiKey: z.string().optional().describe('Optional: MeteoControl API Key (if not set on server)'),
+  user: z.string().optional().describe('Optional: MeteoControl Username (if not set on server)'),
+  password: z.string().optional().describe('Optional: MeteoControl Password (if not set on server)'),
+};
+
 /**
  * MeteoControl MCP Server
  * Provides access to solar installation data via the VCOM API v2.
  */
 export class MeteoControlServer {
   private server: McpServer;
-  private api: MeteoControlApi;
+  private defaultApi: MeteoControlApi;
   public readonly name = 'meteocontrol-mcp';
   public readonly version = '1.0.0';
 
@@ -26,11 +33,7 @@ export class MeteoControlServer {
     const user = process.env['METEOCONTROL_USER'] || '';
     const password = process.env['METEOCONTROL_PASSWORD'] || '';
 
-    if (!apiKey || !user || !password) {
-      console.warn('Warning: MeteoControl credentials (API Key, User, Password) are not fully set in environment.');
-    }
-
-    this.api = new MeteoControlApi({
+    this.defaultApi = new MeteoControlApi({
       apiKey,
       user,
       password,
@@ -40,11 +43,26 @@ export class MeteoControlServer {
     this.registerTools();
   }
 
+  private getApi(args: { apiKey?: string; user?: string; password?: string }): MeteoControlApi {
+    // If specific credentials are provided in tool arguments, use them
+    if (args.apiKey && args.user && args.password) {
+      return new MeteoControlApi({
+        apiKey: args.apiKey,
+        user: args.user,
+        password: args.password,
+        baseUrl: process.env['METEOCONTROL_API_BASE_URL'] || 'https://api.meteocontrol.de/v2',
+      });
+    }
+    // Otherwise use default API (environment variables)
+    return this.defaultApi;
+  }
+
   private registerTools() {
     // Tool - System Discovery
-    this.server.tool('list_systems', {}, async () => {
+    this.server.tool('list_systems', { ...AuthSchema }, async (args) => {
       try {
-        const data = await this.api.get('/systems');
+        const api = this.getApi(args);
+        const data = await api.get('/systems');
         return {
           content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
         };
@@ -65,13 +83,14 @@ export class MeteoControlServer {
         systemKey: z.string().describe('The unique key/ID of the solar system.'),
         from: z.string().describe('The start date and time (ISO 8601).'),
         to: z.string().describe('The end date and time (ISO 8601).'),
+        ...AuthSchema,
       },
-      async ({ systemKey, from, to }) => {
+      async (args) => {
         try {
-          // Defaulting to E_Z_EVU as the primary yield abbreviation
-          const data = await this.api.get(`/systems/${systemKey}/basics/abbreviations/E_Z_EVU/measurements`, {
-            from,
-            to,
+          const api = this.getApi(args);
+          const data = await api.get(`/systems/${args.systemKey}/basics/abbreviations/E_Z_EVU/measurements`, {
+            from: args.from,
+            to: args.to,
           });
           return {
             content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
@@ -95,10 +114,12 @@ export class MeteoControlServer {
       'get_alerts',
       {
         systemKey: z.string().describe('The unique key/ID of the solar system.'),
+        ...AuthSchema,
       },
-      async ({ systemKey }) => {
+      async (args) => {
         try {
-          const data = await this.api.get(`/systems/${systemKey}/alarms`);
+          const api = this.getApi(args);
+          const data = await api.get(`/systems/${args.systemKey}/alarms`);
           return {
             content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
           };
@@ -121,10 +142,12 @@ export class MeteoControlServer {
       'get_asset_info',
       {
         systemKey: z.string().describe('The unique key/ID of the solar system.'),
+        ...AuthSchema,
       },
-      async ({ systemKey }) => {
+      async (args) => {
         try {
-          const data = await this.api.get(`/systems/${systemKey}`);
+          const api = this.getApi(args);
+          const data = await api.get(`/systems/${args.systemKey}`);
           return {
             content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
           };

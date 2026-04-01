@@ -57,11 +57,10 @@ describe('MeteoControlApi', () => {
     );
   });
 
-  it('should throw error if required credentials are missing', async () => {
+  it('should initialize without credentials', async () => {
     const { MeteoControlApi: ApiClass } = await import('./api.js');
-    expect(() => new ApiClass({ apiKey: '', user: '', password: '', baseUrl: '' })).toThrow();
-    expect(() => new ApiClass({ apiKey: 'key', user: '', password: '', baseUrl: '' })).toThrow();
-    expect(() => new ApiClass({ apiKey: 'key', user: 'user', password: '', baseUrl: '' })).toThrow();
+    const api = new ApiClass({ apiKey: '', user: '', password: '', baseUrl: '' });
+    expect(api).toBeDefined();
   });
 
   it('should perform GET request', async () => {
